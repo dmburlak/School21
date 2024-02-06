@@ -1,0 +1,20 @@
+FROM nginx
+
+WORKDIR /home/nginx
+COPY ./entrypoint.sh /home/nginx/entrypoint.sh
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
+
+RUN apt-get update && \
+    apt-get install -y gcc spawn-fcgi libfcgi-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Здесь устанавливается владелец и разрешения
+RUN chown -R nginx:nginx /var/cache/nginx/ /var/run/ /home/nginx/ && \
+    chmod +x /home/nginx/entrypoint.sh
+
+USER nginx
+
+ENTRYPOINT ["./entrypoint.sh"]
+
+
